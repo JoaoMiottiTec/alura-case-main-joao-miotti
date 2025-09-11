@@ -34,7 +34,7 @@ public class CourseService {
 
     @Transactional
     public CourseDTO create(NewCourseForm form) {
-        if (!CodeValidator.isValidated(form.getCode())) {
+        if (!CodeValidator.isValid(form.getCode())) {
             throw new IllegalArgumentException("Invalid code: use lowercase letters and hyphens.");
         }
         if (courses.existsByCode(form.getCode())) {
