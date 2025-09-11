@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+
 @Controller
 public class CourseController {
-
+// I did not observe a service layer in the code in the pattern created because it is a test, but for the sake of representing a complete project, I will add it.
     @GetMapping("/admin/courses")
     public String list(@Valid NewCourseForm form) {
         // TODO: Implementar a Questão 1 - Listagem de Cursos aqui...
