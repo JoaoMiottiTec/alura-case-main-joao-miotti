@@ -74,4 +74,15 @@ public class CourseService {
                 .orElseThrow(() -> new IllegalArgumentException("Course not found for the given code."));
         course.updateStatus(CourseStatus.ACTIVE);
     }
+
+    public List<String> listActiveCategoryNames() {
+        return courses.findActiveCategoryNames();
+    }
+
+    public List<CourseDTO> listActive(String categoryName) {
+        if (categoryName == null || categoryName.isBlank()) {
+            return courses.findAllActiveAsDTO();
+        }
+        return courses.findActiveByCategoryAsDTO(categoryName);
+    }
 }
