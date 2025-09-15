@@ -9,50 +9,59 @@
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/login.css'/>">
 </head>
 <body class="login-page">
-<div class="container">
-    <!-- login box à esquerda -->
-    <div class="login-box">
-        <h2>Já estuda com a gente?</h2>
-        <p>Faça seu login e boa aula!</p>
-        <a href="<c:url value='/admin/categories'/>" class="btn-login">ENTRAR</a>
-    </div>
 
-    <!-- categorias + cursos à direita -->
-    <div class="courses">
-        <h2>Ainda não estuda com a gente?</h2>
-        <p>São mais de mil cursos nas seguintes áreas:</p>
+    <a href="admin/courses" class="skip-link">Pular para o conteúdo</a>
 
-        <div class="grid">
-            <c:forEach var="cat" items="${categories}">
-                <div class="card">
-                    <h3>Escola_ ${cat}</h3>
+    <main id="conteudo">
+        <div class="container">
 
-                    <c:set var="courseLine" value=""/>
-                    <c:forEach var="c" items="${courses}" varStatus="loop">
-                        <c:if test="${c.categoryName == cat}">
+            <section class="login-box" role="region" aria-labelledby="login-title">
+                <h2 id="login-title">Já estuda com a gente?</h2>
+                <p id="login-desc">Faça seu login e boa aula!</p>
+                <a href="<c:url value='/admin/categories'/>"
+                   class="btn-login"
+                   aria-describedby="login-desc">
+                    ENTRAR
+                </a>
+            </section>
+
+            <section class="courses" role="region" aria-labelledby="courses-title">
+                <h1 id="courses-title">Ainda não estuda com a gente?</h1>
+                <p>São mais de mil cursos nas seguintes áreas:</p>
+
+                <div class="grid">
+                    <c:forEach var="cat" items="${categories}" varStatus="loop">
+                        <article class="card" role="article" aria-labelledby="cat-${loop.index}-title">
+                            <h3 id="cat-${loop.index}-title">Escola_ ${cat}</h3>
+
+                            <c:set var="courseLine" value=""/>
+                            <c:forEach var="c" items="${courses}">
+                                <c:if test="${c.categoryName == cat}">
+                                    <c:choose>
+                                        <c:when test="${empty courseLine}">
+                                            <c:set var="courseLine" value="${c.name}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="courseLine" value="${courseLine}, ${c.name}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                            </c:forEach>
+
                             <c:choose>
-                                <c:when test="${empty courseLine}">
-                                    <c:set var="courseLine" value="${c.name}"/>
+                                <c:when test="${not empty courseLine}">
+                                    <p>${courseLine}</p>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:set var="courseLine" value="${courseLine}, ${c.name}"/>
+                                    <p>Nenhum curso ativo nesta categoria.</p>
                                 </c:otherwise>
                             </c:choose>
-                        </c:if>
+                        </article>
                     </c:forEach>
-
-                    <c:choose>
-                        <c:when test="${not empty courseLine}">
-                            <p>${courseLine}</p>
-                        </c:when>
-                        <c:otherwise>
-                            <p>Nenhum curso ativo nesta categoria.</p>
-                        </c:otherwise>
-                    </c:choose>
                 </div>
-            </c:forEach>
+            </section>
+
         </div>
-    </div>
-</div>
+    </main>
 </body>
 </html>
