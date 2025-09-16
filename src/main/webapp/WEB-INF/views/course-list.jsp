@@ -6,6 +6,7 @@
   <title>Courses</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" type="text/css" href="/assets/external-libs/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/courses.css">
   <style>
     .nowrap { white-space: nowrap; }
     .modal .help { font-size:12px; color:#777; margin-top:6px; }
@@ -105,16 +106,21 @@
 
           <div class="form-group">
             <label>Description</label>
-            <textarea class="form-control" name="description" id="courseDescription" rows="3" required minlength="10" maxlength="500"></textarea>
+            <textarea class="form-control" name="description" id="courseDescription" rows="3" required minlength="10" maxlength="5000"></textarea>
           </div>
+          <input type="hidden" name="status" id="courseStatusHidden" value="ACTIVE"/>
 
-          <div class="form-group">
-            <label>Status</label>
-            <select class="form-control" name="status" id="courseStatus" required>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
-            </select>
-            <div class="help">When switching to <b>INACTIVE</b>, the inactivation date will be set automatically.</div>
+        <div class="form-group">
+          <label>Status</label>
+          <div class="status-toggle">
+            <span id="labelActive" class="status-label active">ACTIVE</span>
+          
+            <label class="switch">
+              <input type="checkbox" id="courseStatusToggle">
+              <span class="slider"></span>
+            </label>
+          
+            <span id="labelInactive" class="status-label inactive">INACTIVE</span>
           </div>
         </div>
 
@@ -134,18 +140,24 @@
 <script src="/assets/external-libs/bootstrap/js/bootstrap.min.js"></script>
 
 <script>
-(function() {
+(function () {
   var base = '${pageContext.request.contextPath}';
+  function setStatusUI(isInactive) {
+    $('#courseStatusToggle').prop('checked', isInactive);
+    $('#courseStatusHidden').val(isInactive ? 'INACTIVE' : 'ACTIVE');
+    $('#labelActive').toggleClass('active', !isInactive);
+    $('#labelInactive').toggleClass('active', isInactive);
+  }
 
   $('#editCourseModal').on('show.bs.modal', function (event) {
     var btn = $(event.relatedTarget);
 
-    var code = btn.data('code');
-    var name = btn.data('name');
-    var instructor = btn.data('instructor');
-    var categoryId = btn.data('category-id');
+    var code        = btn.data('code');
+    var name        = btn.data('name');
+    var instructor  = btn.data('instructor');
+    var categoryId  = btn.data('category-id');
     var description = btn.data('description');
-    var status = btn.data('status');
+    var status      = btn.data('status');
 
     var modal = $(this);
     modal.find('#editCourseForm').attr('action', base + '/admin/course/' + code + '/edit');
@@ -155,8 +167,16 @@
     modal.find('#courseInstructor').val(instructor);
     modal.find('#courseDescription').val(description);
     modal.find('#courseCategory').val(categoryId);
-    modal.find('#courseStatus').val(status);
+
+    setStatusUI(status === 'INACTIVE');
   });
+
+  $(document)
+    .off('change', '#courseStatusToggle')
+    .on('change', '#courseStatusToggle', function () {
+      setStatusUI($(this).is(':checked'));
+    });
+
 })();
 </script>
 
