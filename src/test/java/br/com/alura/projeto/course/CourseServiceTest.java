@@ -132,4 +132,115 @@ class CourseServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.reactivateByCode("nope"));
     }
 
+     @Test
+    void update_ok_changes_all_fields_and_sets_inactive_timestamp() {
+        Course course = new Course("Old Name","java-web", instructor, category, "old desc");
+
+        User newInstructor = new User("Paulo", "paulo@alura.com", Role.INSTRUCTOR, "x");
+        Category newCategory = new Category("Java","java","#00FF00", 2);
+
+        UpdateCourseForm uf = new UpdateCourseForm();
+        uf.setName("New Name");
+        uf.setInstructorEmail("paulo@alura.com");
+        uf.setCategoryId(2L);
+        uf.setDescription("new description here");
+        uf.setStatus(CourseStatus.INACTIVE);
+
+        when(courses.findByCode("java-web")).thenReturn(Optional.of(course));
+        when(users.findByEmail("paulo@alura.com")).thenReturn(Optional.of(newInstructor));
+        when(categories.findById(2L)).thenReturn(Optional.of(newCategory));
+        when(courses.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        CourseDTO dto = service.update("java-web", uf);
+
+        assertEquals("java-web", dto.getCode());
+        assertEquals("New Name", dto.getName());
+        assertEquals("paulo@alura.com", dto.getInstructorEmail());
+        assertEquals("Java", dto.getCategoryName());
+        assertEquals("new description here", dto.getDescription());
+        assertEquals("INACTIVE", dto.getStatus());
+        assertEquals(CourseStatus.INACTIVE, course.getStatus());
+        assertNotNull(course.getInactiveAt());
+    }
+
+    @Test
+    void update_ok_reactivate_clears_inactiveAt() {
+        Course course = new Course("Old Name","java-web", instructor, category, "old desc");
+        course.updateStatus(CourseStatus.INACTIVE);
+        assertNotNull(course.getInactiveAt());
+
+        UpdateCourseForm uf = new UpdateCourseForm();
+        uf.setName("Still Name");
+        uf.setInstructorEmail("ana@alura.com");
+        uf.setCategoryId(1L); 
+        uf.setDescription("keep");
+        uf.setStatus(CourseStatus.ACTIVE);
+
+        when(courses.findByCode("java-web")).thenReturn(Optional.of(course));
+        when(users.findByEmail("ana@alura.com")).thenReturn(Optional.of(instructor));
+        when(categories.findById(1L)).thenReturn(Optional.of(category));
+        when(courses.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        CourseDTO dto = service.update("java-web", uf);
+
+        assertEquals("ACTIVE", dto.getStatus());
+        assertEquals(CourseStatus.ACTIVE, course.getStatus());
+        assertNull(course.getInactiveAt());
+    }
+
+    @Test
+    void update_fails_whenCourseNotFound() {
+        when(courses.findByCode("nope")).thenReturn(Optional.empty());
+        UpdateCourseForm uf = minimalUpdateForm();
+        assertThrows(IllegalArgumentException.class, () -> service.update("nope", uf));
+    }
+
+    @Test
+    void update_fails_whenInstructorNotFound() {
+        Course course = new Course("Java Web","java-web", instructor, category, "desc");
+        when(courses.findByCode("java-web")).thenReturn(Optional.of(course));
+        when(users.findByEmail("ghost@alura.com")).thenReturn(Optional.empty());
+
+        UpdateCourseForm uf = minimalUpdateForm();
+        uf.setInstructorEmail("ghost@alura.com");
+
+        assertThrows(IllegalArgumentException.class, () -> service.update("java-web", uf));
+    }
+
+    @Test
+    void update_fails_whenNotInstructorRole() {
+        Course course = new Course("Java Web","java-web", instructor, category, "desc");
+        when(courses.findByCode("java-web")).thenReturn(Optional.of(course));
+
+        User student = new User("Bob","bob@alura.com", Role.STUDENT, "x");
+        when(users.findByEmail("bob@alura.com")).thenReturn(Optional.of(student));
+
+        UpdateCourseForm uf = minimalUpdateForm();
+        uf.setInstructorEmail("bob@alura.com");
+
+        assertThrows(IllegalArgumentException.class, () -> service.update("java-web", uf));
+    }
+
+    @Test
+    void update_fails_whenCategoryNotFound() {
+        Course course = new Course("Java Web","java-web", instructor, category, "desc");
+        when(courses.findByCode("java-web")).thenReturn(Optional.of(course));
+        when(users.findByEmail("ana@alura.com")).thenReturn(Optional.of(instructor));
+        when(categories.findById(99L)).thenReturn(Optional.empty());
+
+        UpdateCourseForm uf = minimalUpdateForm();
+        uf.setCategoryId(99L);
+
+        assertThrows(IllegalArgumentException.class, () -> service.update("java-web", uf));
+    }
+
+    private UpdateCourseForm minimalUpdateForm() {
+        UpdateCourseForm uf = new UpdateCourseForm();
+        uf.setName("Any");
+        uf.setInstructorEmail("ana@alura.com");
+        uf.setCategoryId(1L);
+        uf.setDescription("some description long enough");
+        uf.setStatus(CourseStatus.ACTIVE);
+        return uf;
+    }
 }
