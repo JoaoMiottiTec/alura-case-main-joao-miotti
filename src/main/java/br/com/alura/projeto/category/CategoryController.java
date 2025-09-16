@@ -74,10 +74,12 @@ public class CategoryController {
             return "redirect:/admin/categories";
         }
 
-        Category entity = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada: " + id));
+        Category entity = categoryRepository.findById(id).orElse(null);
+        if (entity == null) {
+            ra.addFlashAttribute("error", "Categoria não encontrada: " + id);
+            return "redirect:/admin/categories";
+        }
 
-        // Aqui atualiza NOME, mantém CODE
         entity.update(name, entity.getCode(), color, form.getOrder());
         categoryRepository.save(entity);
 
