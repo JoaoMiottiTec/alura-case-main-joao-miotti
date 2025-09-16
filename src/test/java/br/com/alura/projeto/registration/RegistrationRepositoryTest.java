@@ -1,5 +1,7 @@
 package br.com.alura.projeto.registration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import br.com.alura.projeto.course.Course;
 import br.com.alura.projeto.course.CourseRepository;
 import br.com.alura.projeto.course.CourseStatus;
@@ -7,6 +9,10 @@ import br.com.alura.projeto.user.Role;
 import br.com.alura.projeto.user.User;
 import br.com.alura.projeto.user.UserRepository;
 import jakarta.persistence.EntityManager;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,23 +23,17 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class RegistrationRepositoryTest {
 
   @Container
-  static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.4")
-      .withDatabaseName("testdb")
-      .withUsername("test")
-      .withPassword("test");
+  static final MySQLContainer<?> mysql =
+      new MySQLContainer<>("mysql:8.4")
+          .withDatabaseName("testdb")
+          .withUsername("test")
+          .withPassword("test");
 
   @DynamicPropertySource
   static void props(DynamicPropertyRegistry r) {
@@ -64,8 +64,8 @@ class RegistrationRepositoryTest {
     users.deleteAll();
 
     instructor = new User("Ana Silva", "ana@alura.com", Role.INSTRUCTOR, "x");
-    alice      = new User("Alice", "alice@alura.com", Role.STUDENT, "x");
-    bob        = new User("Bob",   "bob@alura.com",   Role.STUDENT, "x");
+    alice = new User("Alice", "alice@alura.com", Role.STUDENT, "x");
+    bob = new User("Bob", "bob@alura.com", Role.STUDENT, "x");
     users.saveAll(List.of(instructor, alice, bob));
 
     category = newCategory("Programming");
@@ -87,7 +87,7 @@ class RegistrationRepositoryTest {
     courses.saveAll(List.of(javaFund, springApi));
 
     registrations.save(new Registration(alice, javaFund));
-    registrations.save(new Registration(bob,   javaFund));
+    registrations.save(new Registration(bob, javaFund));
     registrations.save(new Registration(alice, springApi));
   }
 
@@ -106,7 +106,7 @@ class RegistrationRepositoryTest {
 
     assertThat(items).hasSize(2);
 
-    RegistrationReportItem first  = items.get(0);
+    RegistrationReportItem first = items.get(0);
     RegistrationReportItem second = items.get(1);
 
     assertThat(first.getCourseCode()).isEqualTo("JAVA01");
@@ -125,8 +125,8 @@ class RegistrationRepositoryTest {
   private Object newCategory(String name) throws Exception {
     Class<?> catClazz = Class.forName("br.com.alura.projeto.category.Category");
     Object category = newInstance(catClazz);
-    setProp(category, "name",  name);
-    setProp(category, "code",  "CAT-PROG");
+    setProp(category, "name", name);
+    setProp(category, "code", "CAT-PROG");
     setProp(category, "color", "#0A84FF");
     setProp(category, "order", 1);
     em.persist(category);
@@ -146,18 +146,32 @@ class RegistrationRepositoryTest {
 
   private static void setProp(Object target, String propertyName, Object value) {
     Class<?> clazz = target.getClass();
-    String setter = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+    String setter =
+        "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
     for (Method m : clazz.getMethods()) {
-      if (m.getName().equals(setter) && m.getParameterCount() == 1 &&
-          m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
-        try { m.invoke(target, value); return; } catch (Exception ex) { throw new RuntimeException(ex); }
+      if (m.getName().equals(setter)
+          && m.getParameterCount() == 1
+          && m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
+        try {
+          m.invoke(target, value);
+          return;
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
       }
     }
     for (Method m : clazz.getDeclaredMethods()) {
-      if (m.getName().equals(setter) && m.getParameterCount() == 1 &&
-          m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
-        try { m.setAccessible(true); m.invoke(target, value); return; } catch (Exception ex) { throw new RuntimeException(ex); }
+      if (m.getName().equals(setter)
+          && m.getParameterCount() == 1
+          && m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
+        try {
+          m.setAccessible(true);
+          m.invoke(target, value);
+          return;
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
       }
     }
     try {
@@ -165,15 +179,19 @@ class RegistrationRepositoryTest {
       f.setAccessible(true);
       f.set(target, value);
     } catch (Exception ex) {
-      throw new RuntimeException("Cannot set property '" + propertyName + "' on " + clazz.getName(), ex);
+      throw new RuntimeException(
+          "Cannot set property '" + propertyName + "' on " + clazz.getName(), ex);
     }
   }
 
   private static Field findField(Class<?> type, String name) throws NoSuchFieldException {
     Class<?> c = type;
     while (c != null) {
-      try { return c.getDeclaredField(name); }
-      catch (NoSuchFieldException ignored) { c = c.getSuperclass(); }
+      try {
+        return c.getDeclaredField(name);
+      } catch (NoSuchFieldException ignored) {
+        c = c.getSuperclass();
+      }
     }
     throw new NoSuchFieldException(name);
   }

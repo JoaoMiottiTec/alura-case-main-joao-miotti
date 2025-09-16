@@ -28,7 +28,21 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<spotless.version>2.43.0</spotless.version>
+		<checkstyle.plugin.version>3.3.1</checkstyle.plugin.version>
+		<checkstyle.engine.version>10.12.5</checkstyle.engine.version>
 	</properties>
+	<dependencyManagement>
+	  <dependencies>
+	    <dependency>
+	      <groupId>org.testcontainers</groupId>
+	      <artifactId>testcontainers-bom</artifactId>
+	      <version>1.20.1</version>
+	      <type>pom</type>
+	      <scope>import</scope>
+	    </dependency>
+	  </dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,23 +105,17 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-  		    <groupId>org.springframework.boot</groupId>
-  		    <artifactId>spring-boot-starter-test</artifactId>
-  		    <scope>test</scope>
-  		</dependency>
-  		<dependency>
-  		    <groupId>org.testcontainers</groupId>
-  		    <artifactId>junit-jupiter</artifactId>
-  		    <version>1.20.1</version>
-  		    <scope>test</scope>
-  		</dependency>
-  		<dependency>
-  		    <groupId>org.testcontainers</groupId>
-  		    <artifactId>mysql</artifactId>
-  		    <version>1.20.1</version>
-  		    <scope>test</scope>
-  		</dependency>
+		  <groupId>org.testcontainers</groupId>
+		  <artifactId>junit-jupiter</artifactId>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.testcontainers</groupId>
+		  <artifactId>mysql</artifactId>
+		  <scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -115,6 +123,50 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+			  <groupId>com.diffplug.spotless</groupId>
+			  <artifactId>spotless-maven-plugin</artifactId>
+			  <version>${spotless.version}</version>
+			  <configuration>
+			    <java>
+			      <googleJavaFormat>
+			        <version>1.17.0</version>
+			      </googleJavaFormat>
+			      <removeUnusedImports/>
+			      <importOrder/>
+			      <formatAnnotations/>
+			    </java>
+			  </configuration>
+			</plugin>
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-checkstyle-plugin</artifactId>
+			  <version>${checkstyle.plugin.version}</version>
+			  <dependencies>
+			    <dependency>
+			      <groupId>com.puppycrawl.tools</groupId>
+			      <artifactId>checkstyle</artifactId>
+			      <version>${checkstyle.engine.version}</version>
+			    </dependency>
+			  </dependencies>
+			  <configuration>
+			    <configLocation>google_checks.xml</configLocation>
+			    <encoding>UTF-8</encoding>
+			    <consoleOutput>true</consoleOutput>
+			    <failsOnError>false</failsOnError>
+			    <includeTestSourceDirectory>false</includeTestSourceDirectory>
+			    <linkXRef>false</linkXRef>
+			  </configuration>
+			  <executions>
+			    <execution>
+			      <id>checkstyle-report</id>
+			      <phase>verify</phase>
+			      <goals>
+			        <goal>check</goal>
+			      </goals>
+			    </execution>
+			  </executions>
 			</plugin>
 		</plugins>
 	</build>

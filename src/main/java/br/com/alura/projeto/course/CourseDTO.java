@@ -21,7 +21,15 @@ public class CourseDTO {
     this.status = c.getStatus().name();
   }
 
-  public CourseDTO(Long id, String name, String code, String instructorEmail,Long categoryId, String categoryName, String description, String status) {
+  public CourseDTO(
+      Long id,
+      String name,
+      String code,
+      String instructorEmail,
+      Long categoryId,
+      String categoryName,
+      String description,
+      String status) {
     this.id = id;
     this.name = name;
     this.code = code;
@@ -32,16 +40,46 @@ public class CourseDTO {
     this.status = status;
   }
 
-  public CourseDTO(Long id, String name, String code, String instructorEmail,String categoryName, String description, String status) {
+  public CourseDTO(
+      Long id,
+      String name,
+      String code,
+      String instructorEmail,
+      String categoryName,
+      String description,
+      String status) {
     this(id, name, code, instructorEmail, null, categoryName, description, status);
   }
 
-  public Long getId() { return id; }
-  public String getName() { return name; }
-  public String getCode() { return code; }
-  public String getInstructorEmail() { return instructorEmail; }
-  public Long getCategoryId() { return categoryId; }
-  public String getCategoryName() { return categoryName; }
-  public String getDescription() { return description; }
-  public String getStatus() { return status; }
+  public Long getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public String getInstructorEmail() {
+    return instructorEmail;
+  }
+
+  public Long getCategoryId() {
+    return categoryId;
+  }
+
+  public String getCategoryName() {
+    return categoryName;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public String getStatus() {
+    return status;
+  }
 }

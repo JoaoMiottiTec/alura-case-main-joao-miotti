@@ -7,61 +7,56 @@ import org.hibernate.validator.constraints.Length;
 
 public class NewCourseForm {
 
-    @NotBlank
-    private String name;
+  @NotBlank private String name;
 
-    @NotBlank
-    @Length(min = 4, max = 10)
-    private String code;
+  @NotBlank
+  @Length(min = 4, max = 10) private String code;
 
-    private String description;
+  private String description;
 
-    @NotNull
-    private Long categoryId;
+  @NotNull private Long categoryId;
 
-    @NotBlank
-    @Email
-    private String instructorEmail;
+  @NotBlank @Email private String instructorEmail;
 
-    public NewCourseForm() {}
+  public NewCourseForm() {}
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getInstructorEmail() {
-        return instructorEmail;
-    }
+  public String getInstructorEmail() {
+    return instructorEmail;
+  }
 
-    public void setInstructorEmail(String instructorEmail) {
-        this.instructorEmail = instructorEmail;
-    }
+  public void setInstructorEmail(String instructorEmail) {
+    this.instructorEmail = instructorEmail;
+  }
 
-    public Long getCategoryId() {
-        return categoryId;
-    }
+  public Long getCategoryId() {
+    return categoryId;
+  }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
+  public void setCategoryId(Long categoryId) {
+    this.categoryId = categoryId;
+  }
 }

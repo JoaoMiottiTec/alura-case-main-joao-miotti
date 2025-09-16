@@ -5,29 +5,29 @@ import org.springframework.validation.FieldError;
 
 public class ErrorItemDTO {
 
-    private final String field;
-    private final String message;
+  private final String field;
+  private final String message;
 
-    public ErrorItemDTO(FieldError fieldError) {
-        this(fieldError.getField(), fieldError.getDefaultMessage());
-    }
+  public ErrorItemDTO(FieldError fieldError) {
+    this(fieldError.getField(), fieldError.getDefaultMessage());
+  }
 
-    public ErrorItemDTO(String field, String message) {
-        Assert.notNull(field, "Field description must not be null");
-        Assert.isTrue(!field.isEmpty(), "Field description must not be empty");
+  public ErrorItemDTO(String field, String message) {
+    Assert.notNull(field, "Field description must not be null");
+    Assert.isTrue(!field.isEmpty(), "Field description must not be empty");
 
-        Assert.notNull(message, "Message description must not be null");
-        Assert.isTrue(!message.isEmpty(), "Message description must not be empty");
+    Assert.notNull(message, "Message description must not be null");
+    Assert.isTrue(!message.isEmpty(), "Message description must not be empty");
 
-        this.field = field;
-        this.message = message;
-    }
+    this.field = field;
+    this.message = message;
+  }
 
-    public String getField() {
-        return field;
-    }
+  public String getField() {
+    return field;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 }

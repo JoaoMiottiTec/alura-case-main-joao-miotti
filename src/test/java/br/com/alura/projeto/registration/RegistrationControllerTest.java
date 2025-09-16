@@ -1,6 +1,15 @@
 package br.com.alura.projeto.registration;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,16 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = RegistrationController.class)
 class RegistrationControllerTest {
@@ -46,9 +45,9 @@ class RegistrationControllerTest {
     when(service.register(any(NewRegistrationDTO.class))).thenReturn(response);
 
     mvc.perform(
-        post("/registration/new")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(om.writeValueAsString(dto(courseCode, email))))
+            post("/registration/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(dto(courseCode, email))))
         .andExpect(status().isCreated())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.courseCode").value(courseCode))
@@ -59,10 +58,12 @@ class RegistrationControllerTest {
   @Test
   @DisplayName("GET /registration/report -> 200 OK with projected items")
   void report_returns200_withItems() throws Exception {
-    RegistrationReportItem item1 = new RegistrationReportItemImpl(
-        "Java Fundamentals", "JAVA01", "Ana Silva", "ana@alura.com", 5L);
-    RegistrationReportItem item2 = new RegistrationReportItemImpl(
-        "Spring Boot API", "SPR02", "Bruno Lima", "bruno@alura.com", 3L);
+    RegistrationReportItem item1 =
+        new RegistrationReportItemImpl(
+            "Java Fundamentals", "JAVA01", "Ana Silva", "ana@alura.com", 5L);
+    RegistrationReportItem item2 =
+        new RegistrationReportItemImpl(
+            "Spring Boot API", "SPR02", "Bruno Lima", "bruno@alura.com", 3L);
 
     when(registrations.reportTopCourses()).thenReturn(List.of(item1, item2));
 
@@ -89,19 +90,42 @@ class RegistrationControllerTest {
     private final String instructorEmail;
     private final Long registrations;
 
-    RegistrationReportItemImpl(String courseName, String courseCode,
-                               String instructorName, String instructorEmail,
-                               Long registrations) {
+    RegistrationReportItemImpl(
+        String courseName,
+        String courseCode,
+        String instructorName,
+        String instructorEmail,
+        Long registrations) {
       this.courseName = courseName;
       this.courseCode = courseCode;
       this.instructorName = instructorName;
       this.instructorEmail = instructorEmail;
       this.registrations = registrations;
     }
-    @Override public String getCourseName() { return courseName; }
-    @Override public String getCourseCode() { return courseCode; }
-    @Override public String getInstructorName() { return instructorName; }
-    @Override public String getInstructorEmail() { return instructorEmail; }
-    @Override public Long getRegistrations() { return registrations; }
+
+    @Override
+    public String getCourseName() {
+      return courseName;
+    }
+
+    @Override
+    public String getCourseCode() {
+      return courseCode;
+    }
+
+    @Override
+    public String getInstructorName() {
+      return instructorName;
+    }
+
+    @Override
+    public String getInstructorEmail() {
+      return instructorEmail;
+    }
+
+    @Override
+    public Long getRegistrations() {
+      return registrations;
+    }
   }
 }

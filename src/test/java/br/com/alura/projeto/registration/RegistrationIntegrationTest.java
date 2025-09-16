@@ -1,5 +1,12 @@
 package br.com.alura.projeto.registration;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import br.com.alura.projeto.course.Course;
 import br.com.alura.projeto.course.CourseRepository;
 import br.com.alura.projeto.course.CourseStatus;
@@ -9,6 +16,10 @@ import br.com.alura.projeto.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,18 +33,6 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
@@ -41,10 +40,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RegistrationIntegrationTest {
 
   @Container
-  static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.4")
-      .withDatabaseName("testdb")
-      .withUsername("test")
-      .withPassword("test");
+  static final MySQLContainer<?> mysql =
+      new MySQLContainer<>("mysql:8.4")
+          .withDatabaseName("testdb")
+          .withUsername("test")
+          .withPassword("test");
 
   @DynamicPropertySource
   static void props(DynamicPropertyRegistry r) {
@@ -98,67 +98,72 @@ class RegistrationIntegrationTest {
     courses.saveAll(List.of(active, inactive));
   }
 
-  @Test @Order(1)
+  @Test
+  @Order(1)
   void post_register_created_and_persists() throws Exception {
     NewRegistrationDTO body = new NewRegistrationDTO();
     body.setCourseCode(activeCode);
     body.setStudentEmail(email);
 
-    mvc.perform(post("/registration/new")
-            .contentType(APPLICATION_JSON)
-            .content(om.writeValueAsString(body)))
+    mvc.perform(
+            post("/registration/new")
+                .contentType(APPLICATION_JSON)
+                .content(om.writeValueAsString(body)))
         .andExpect(status().is2xxSuccessful());
 
-    Assertions.assertTrue(registrations.existsByUserAndCourse(
-        users.findByEmail(email).orElseThrow(),
-        courses.findByCode(activeCode).orElseThrow()
-    ));
+    Assertions.assertTrue(
+        registrations.existsByUserAndCourse(
+            users.findByEmail(email).orElseThrow(), courses.findByCode(activeCode).orElseThrow()));
   }
 
-  @Test @Order(2)
+  @Test
+  @Order(2)
   void post_register_fails_when_already_registered() throws Exception {
-    registrations.save(new Registration(
-        users.findByEmail(email).orElseThrow(),
-        courses.findByCode(activeCode).orElseThrow()
-    ));
+    registrations.save(
+        new Registration(
+            users.findByEmail(email).orElseThrow(), courses.findByCode(activeCode).orElseThrow()));
 
     NewRegistrationDTO body = new NewRegistrationDTO();
     body.setCourseCode(activeCode);
     body.setStudentEmail(email);
 
-    ServletException ex = Assertions.assertThrows(
-        ServletException.class,
-        () -> mvc.perform(
-                post("/registration/new")
-                    .contentType(APPLICATION_JSON)
-                    .content(om.writeValueAsString(body))
-            ).andReturn()
-    );
+    ServletException ex =
+        Assertions.assertThrows(
+            ServletException.class,
+            () ->
+                mvc.perform(
+                        post("/registration/new")
+                            .contentType(APPLICATION_JSON)
+                            .content(om.writeValueAsString(body)))
+                    .andReturn());
     Throwable cause = ex.getRootCause() != null ? ex.getRootCause() : ex.getCause();
     Assertions.assertInstanceOf(IllegalStateException.class, cause);
     Assertions.assertTrue(cause.getMessage().contains("already registered"));
   }
 
-  @Test @Order(3)
+  @Test
+  @Order(3)
   void post_register_fails_when_course_not_active() throws Exception {
     NewRegistrationDTO body = new NewRegistrationDTO();
     body.setCourseCode(inactiveCode);
     body.setStudentEmail(email);
 
-    ServletException ex = Assertions.assertThrows(
-        ServletException.class,
-        () -> mvc.perform(
-                post("/registration/new")
-                    .contentType(APPLICATION_JSON)
-                    .content(om.writeValueAsString(body))
-            ).andReturn()
-    );
+    ServletException ex =
+        Assertions.assertThrows(
+            ServletException.class,
+            () ->
+                mvc.perform(
+                        post("/registration/new")
+                            .contentType(APPLICATION_JSON)
+                            .content(om.writeValueAsString(body)))
+                    .andReturn());
     Throwable cause = ex.getRootCause() != null ? ex.getRootCause() : ex.getCause();
     Assertions.assertInstanceOf(IllegalStateException.class, cause);
     Assertions.assertTrue(cause.getMessage().contains("not ACTIVE"));
   }
 
-  @Test @Order(4)
+  @Test
+  @Order(4)
   void get_report_returns_items() throws Exception {
     var student = users.findByEmail(email).orElseThrow();
     var active = courses.findByCode(activeCode).orElseThrow();
@@ -173,16 +178,18 @@ class RegistrationIntegrationTest {
   private Object newCategory(String name) throws Exception {
     Class<?> catClazz = Class.forName("br.com.alura.projeto.category.Category");
     Object category = newInstance(catClazz);
-    setProp(category, "name",  name);
-    setProp(category, "code",  "CAT-PROG");
+    setProp(category, "name", name);
+    setProp(category, "code", "CAT-PROG");
     setProp(category, "color", "#0A84FF");
     setProp(category, "order", 1);
 
-    new TransactionTemplate(txm).execute(status -> {
-      em.persist(category);
-      em.flush();
-      return null;
-    });
+    new TransactionTemplate(txm)
+        .execute(
+            status -> {
+              em.persist(category);
+              em.flush();
+              return null;
+            });
     return category;
   }
 
@@ -198,30 +205,54 @@ class RegistrationIntegrationTest {
 
   private static void setProp(Object target, String propertyName, Object value) {
     Class<?> clazz = target.getClass();
-    String setter = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+    String setter =
+        "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
     for (Method m : clazz.getMethods()) {
-      if (m.getName().equals(setter) && m.getParameterCount() == 1 &&
-          m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
-        try { m.invoke(target, value); return; } catch (Exception ex) { throw new RuntimeException(ex); }
+      if (m.getName().equals(setter)
+          && m.getParameterCount() == 1
+          && m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
+        try {
+          m.invoke(target, value);
+          return;
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
       }
     }
     for (Method m : clazz.getDeclaredMethods()) {
-      if (m.getName().equals(setter) && m.getParameterCount() == 1 &&
-          m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
-        try { m.setAccessible(true); m.invoke(target, value); return; } catch (Exception ex) { throw new RuntimeException(ex); }
+      if (m.getName().equals(setter)
+          && m.getParameterCount() == 1
+          && m.getParameterTypes()[0].isAssignableFrom(value.getClass())) {
+        try {
+          m.setAccessible(true);
+          m.invoke(target, value);
+          return;
+        } catch (Exception ex) {
+          throw new RuntimeException(ex);
+        }
       }
     }
     Field f = findField(clazz, propertyName);
-    if (f == null) throw new RuntimeException("Missing setter and field: " + propertyName + " on " + clazz.getName());
-    try { f.setAccessible(true); f.set(target, value); } catch (Exception ex) { throw new RuntimeException(ex); }
+    if (f == null)
+      throw new RuntimeException(
+          "Missing setter and field: " + propertyName + " on " + clazz.getName());
+    try {
+      f.setAccessible(true);
+      f.set(target, value);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   private static Field findField(Class<?> type, String name) {
     Class<?> c = type;
     while (c != null) {
-      try { return c.getDeclaredField(name); }
-      catch (NoSuchFieldException ignored) { c = c.getSuperclass(); }
+      try {
+        return c.getDeclaredField(name);
+      } catch (NoSuchFieldException ignored) {
+        c = c.getSuperclass();
+      }
     }
     return null;
   }
