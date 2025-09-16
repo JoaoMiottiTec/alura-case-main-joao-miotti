@@ -1,6 +1,6 @@
-package br.com.alura.project.course;
+package br.com.alura.projeto.course;
 
-import br.com.alura.project.category.CategoryRepository;
+import br.com.alura.projeto.category.CategoryRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,8 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class CourseController {
-  // I did not notice a service layer in the original code pattern because it is a test,
-  // but to better represent a complete project, I will add it.
+  // I did not observe a service layer in the code in the pattern created because it is a test, but
+  // for the sake of representing a complete project, I will add it.
   private final CourseService service;
   private final CategoryRepository categories;
 
@@ -90,7 +90,7 @@ public class CourseController {
 
     try {
       service.update(code, form);
-      ra.addFlashAttribute("success", "Course updated successfully!");
+      ra.addFlashAttribute("success", "Curso atualizado com sucesso!");
       return "redirect:/admin/courses";
     } catch (IllegalArgumentException ex) {
       ra.addFlashAttribute("error", ex.getMessage());

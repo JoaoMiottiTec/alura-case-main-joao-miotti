@@ -1,4 +1,4 @@
-package br.com.alura.project.category;
+package br.com.alura.projeto.category;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -42,7 +42,7 @@ public class CategoryController {
       return create(form, model);
     }
     categoryRepository.save(form.toModel());
-    ra.addFlashAttribute("success", "Category created successfully!");
+    ra.addFlashAttribute("success", "Categoria criada com sucesso!");
     return "redirect:/admin/categories";
   }
 
@@ -55,33 +55,33 @@ public class CategoryController {
       RedirectAttributes ra) {
 
     if (form.getOrder() < 1) {
-      binding.rejectValue("order", "min", "Order must be greater than or equal to 1.");
+      binding.rejectValue("order", "min", "Ordem deve ser maior ou igual a 1.");
     }
     String color = form.getColor() == null ? "" : form.getColor().trim();
     if (!color.matches("^#[0-9a-fA-F]{6}$")) {
-      binding.rejectValue("color", "pattern", "Color must be in the format #RRGGBB.");
+      binding.rejectValue("color", "pattern", "Cor deve estar no formato #RRGGBB.");
     }
 
     String name = form.getName() == null ? "" : form.getName().trim();
     if (name.isEmpty() || name.length() < 2 || name.length() > 50) {
-      binding.rejectValue("name", "length", "Name must be between 2 and 50 characters.");
+      binding.rejectValue("name", "length", "Nome deve ter entre 2 e 50 caracteres.");
     }
 
     if (binding.hasErrors()) {
-      ra.addFlashAttribute("error", "Could not save. Please check the fields.");
+      ra.addFlashAttribute("error", "Não foi possível salvar. Verifique os campos.");
       return "redirect:/admin/categories";
     }
 
     Category entity = categoryRepository.findById(id).orElse(null);
     if (entity == null) {
-      ra.addFlashAttribute("error", "Category not found: " + id);
+      ra.addFlashAttribute("error", "Categoria não encontrada: " + id);
       return "redirect:/admin/categories";
     }
 
     entity.update(name, entity.getCode(), color, form.getOrder());
     categoryRepository.save(entity);
 
-    ra.addFlashAttribute("success", "Category updated successfully!");
+    ra.addFlashAttribute("success", "Categoria atualizada com sucesso!");
     return "redirect:/admin/categories";
   }
 }
