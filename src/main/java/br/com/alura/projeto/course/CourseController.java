@@ -90,7 +90,7 @@ public class CourseController {
 
     try {
       service.update(code, form);
-      ra.addFlashAttribute("success", "Curso atualizado com sucesso!");
+      ra.addFlashAttribute("success", "Course update with success!");
       return "redirect:/admin/courses";
     } catch (IllegalArgumentException ex) {
       ra.addFlashAttribute("error", ex.getMessage());

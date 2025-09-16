@@ -16,6 +16,42 @@ Não há respostas certas ou erradas, queremos avaliar como você aplica conceit
 - HTML, CSS e JavaScript
 - JSP
 
+## Como Rodar o Projeto
+
+### Pré-requisitos
+- Java 21
+- Maven 3.9+
+- MySQL 8.x
+- Docker
+
+### Configuração do Banco
+1. Crie o banco no MySQL:
+   ```sql
+   CREATE DATABASE projetoalura;
+
+2. Configure `src/main/resources/application.properties`
+
+    spring.datasource.url=jdbc:mysql://localhost:3306/projetoalura
+    spring.datasource.username=root
+    spring.datasource.password=secret
+    spring.jpa.hibernate.ddl-auto=validate
+    spring.flyway.enabled=true
+
+### Rodando a aplicação
+
+```bash
+    mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+### A aplicação estará em:
+    ```bash
+    http://localhost:8080
+    ```
+
+### Rodar testes:
+  `mvn verify`
+
+
+
 ## Instruções
 
 1. Faça o upload do template inicial do projeto no seu repositório GitHub e mantenha-o público (seus commits serão avaliados).

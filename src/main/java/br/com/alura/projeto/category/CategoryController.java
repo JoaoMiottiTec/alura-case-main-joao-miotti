@@ -42,7 +42,7 @@ public class CategoryController {
       return create(form, model);
     }
     categoryRepository.save(form.toModel());
-    ra.addFlashAttribute("success", "Categoria criada com sucesso!");
+    ra.addFlashAttribute("success", "Category created with success!");
     return "redirect:/admin/categories";
   }
 
@@ -55,33 +55,33 @@ public class CategoryController {
       RedirectAttributes ra) {
 
     if (form.getOrder() < 1) {
-      binding.rejectValue("order", "min", "Ordem deve ser maior ou igual a 1.");
+      binding.rejectValue("order", "min", "Order want to more than 1");
     }
     String color = form.getColor() == null ? "" : form.getColor().trim();
     if (!color.matches("^#[0-9a-fA-F]{6}$")) {
-      binding.rejectValue("color", "pattern", "Cor deve estar no formato #RRGGBB.");
+      binding.rejectValue("color", "pattern", "Color is format use #RRGGBB.");
     }
 
     String name = form.getName() == null ? "" : form.getName().trim();
     if (name.isEmpty() || name.length() < 2 || name.length() > 50) {
-      binding.rejectValue("name", "length", "Nome deve ter entre 2 e 50 caracteres.");
+      binding.rejectValue("name", "length", "Name to contain 2 and 50 caracteres.");
     }
 
     if (binding.hasErrors()) {
-      ra.addFlashAttribute("error", "Não foi possível salvar. Verifique os campos.");
+      ra.addFlashAttribute("error", "Is not possible save. Verify fields");
       return "redirect:/admin/categories";
     }
 
     Category entity = categoryRepository.findById(id).orElse(null);
     if (entity == null) {
-      ra.addFlashAttribute("error", "Categoria não encontrada: " + id);
+      ra.addFlashAttribute("error", "Category is not found: " + id);
       return "redirect:/admin/categories";
     }
 
     entity.update(name, entity.getCode(), color, form.getOrder());
     categoryRepository.save(entity);
 
-    ra.addFlashAttribute("success", "Categoria atualizada com sucesso!");
+    ra.addFlashAttribute("success", "Category update with success!");
     return "redirect:/admin/categories";
   }
 }
