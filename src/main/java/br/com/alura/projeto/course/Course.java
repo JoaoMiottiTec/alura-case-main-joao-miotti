@@ -62,9 +62,23 @@ public class Course {
         if (this.status == newStatus) return;
     
         this.status = newStatus;
-        this.inactiveAt = (newStatus == CourseStatus.INACTIVE) 
-            ? LocalDateTime.now() 
-            : null;
+        this.inactiveAt = (newStatus == CourseStatus.INACTIVE) ? LocalDateTime.now() : null;
+     }
+
+    public void rename(String name) {
+        this.name = name;
+    }
+
+    public void assignInstructor(User instructor) {
+        this.instructor = instructor;
+    }
+
+    public void moveToCategory(Category category) {
+        this.category = category;
+    }
+
+    public void rewriteDescription(String description) {
+        this.description = description;
     }
 
     public Long getId() {

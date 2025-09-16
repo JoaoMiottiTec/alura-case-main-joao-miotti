@@ -75,6 +75,28 @@ public class CourseService {
         course.updateStatus(CourseStatus.ACTIVE);
     }
 
+    @Transactional
+    public CourseDTO update(String code, UpdateCourseForm form) {
+        Course course = courses.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found for the given code."));
+    
+        course.rename(form.getName().trim());
+    
+        User instructor = users.findByEmail(form.getInstructorEmail().trim())
+                .orElseThrow(() -> new IllegalArgumentException("Instructor not found for the given email."));
+        if (instructor.getRole() != Role.INSTRUCTOR) {
+            throw new IllegalArgumentException("User is not an INSTRUCTOR.");
+        }
+        course.assignInstructor(instructor);
+    
+        Category category = categories.findById(form.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found."));
+        course.moveToCategory(category);
+        course.rewriteDescription(form.getDescription().trim());
+        course.updateStatus(form.getStatus());
+    
+        return new CourseDTO(courses.save(course));
+    }
     public List<String> listActiveCategoryNames() {
         return courses.findActiveCategoryNames();
     }
@@ -84,5 +106,10 @@ public class CourseService {
             return courses.findAllActiveAsDTO();
         }
         return courses.findActiveByCategoryAsDTO(categoryName);
+    }
+
+    public Course findByCodeOrThrow(String code) {
+        return courses.findByCode(code)
+            .orElseThrow(() -> new IllegalArgumentException("Course not found for the given code."));
     }
 }
