@@ -1,41 +1,106 @@
 package br.com.alura.projeto.course;
 
+import br.com.alura.projeto.category.CategoryRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class CourseController {
+  // I did not observe a service layer in the code in the pattern created because it is a test, but
+  // for the sake of representing a complete project, I will add it.
+  private final CourseService service;
+  private final CategoryRepository categories;
 
-    @GetMapping("/admin/courses")
-    public String list(@Valid NewCourseForm form) {
-        // TODO: Implementar a Questão 1 - Listagem de Cursos aqui...
+  public CourseController(CourseService service, CategoryRepository categories) {
+    this.service = service;
+    this.categories = categories;
+  }
 
-        return "";
+  @GetMapping("/admin/courses")
+  public String list(Model model) {
+    model.addAttribute("courses", service.listAll());
+    model.addAttribute("categories", categories.findAll());
+    return "course-list";
+  }
+
+  @GetMapping("/admin/course/new")
+  public String create(Model model) {
+    model.addAttribute("form", new NewCourseForm());
+    model.addAttribute("categories", categories.findAll());
+    return "course-new";
+  }
+
+  @PostMapping("/admin/course/new")
+  public String save(@Valid @ModelAttribute("form") NewCourseForm form, Model model) {
+    try {
+      service.create(form);
+      return "redirect:/admin/courses";
+    } catch (IllegalArgumentException | IllegalStateException ex) {
+      model.addAttribute("error", ex.getMessage());
+      model.addAttribute("categories", categories.findAll());
+      return "course-new";
+    }
+  }
+
+  @GetMapping("/admin/course/{code}/edit")
+  public String editForm(@PathVariable String code, Model model, RedirectAttributes ra) {
+    try {
+      Course course = service.findByCodeOrThrow(code);
+
+      UpdateCourseForm form = new UpdateCourseForm();
+      form.setName(course.getName());
+      form.setInstructorEmail(course.getInstructor().getEmail());
+      form.setCategoryId(course.getCategory().getId());
+      form.setDescription(course.getDescription());
+      form.setStatus(course.getStatus());
+
+      model.addAttribute("code", code);
+      model.addAttribute("form", form);
+      model.addAttribute("categories", categories.findAll());
+      model.addAttribute("statuses", CourseStatus.values());
+      return "course-edit";
+    } catch (IllegalArgumentException ex) {
+      ra.addFlashAttribute("error", ex.getMessage());
+      return "redirect:/admin/courses";
+    }
+  }
+
+  @PostMapping("/admin/course/{code}/edit")
+  public String update(
+      @PathVariable String code,
+      @Valid @ModelAttribute("form") UpdateCourseForm form,
+      BindingResult binding,
+      RedirectAttributes ra,
+      Model model) {
+
+    if (binding.hasErrors()) {
+      model.addAttribute("code", code);
+      model.addAttribute("categories", categories.findAll());
+      model.addAttribute("statuses", CourseStatus.values());
+      return "course-edit";
     }
 
-    @GetMapping("/admin/course/new")
-    public String create(NewCourseForm form) {
-        // TODO: Implementar a Questão 1 - Cadastro de Cursos aqui...
-
-        return "";
+    try {
+      service.update(code, form);
+      ra.addFlashAttribute("success", "Course update with success!");
+      return "redirect:/admin/courses";
+    } catch (IllegalArgumentException ex) {
+      ra.addFlashAttribute("error", ex.getMessage());
+      return "redirect:/admin/course/" + code + "/edit";
     }
+  }
 
-    @PostMapping("/admin/course/new")
-    public String save(@Valid NewCourseForm form) {
-        // TODO: Implementar a Questão 1 - Cadastro de Cursos aqui...
-
-        return "";
-    }
-
-    @PostMapping("/course/{code}/inactive")
-    public ResponseEntity<?> updateStatus(@PathVariable("code") String courseCode) {
-        // TODO: Implementar a Questão 2 - Inativação de Curso aqui...
-
-        return ResponseEntity.ok().build();
-    }
-
+  @PostMapping("/course/{code}/inactive")
+  public ResponseEntity<?> updateStatus(@PathVariable String code) {
+    service.inactivateByCode(code);
+    return ResponseEntity.ok().build();
+  }
 }

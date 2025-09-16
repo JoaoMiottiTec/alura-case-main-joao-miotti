@@ -1,36 +1,67 @@
-<%@ page pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="/assets/css/login.css">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/login.css'/>">
 </head>
 <body class="login-page">
-<div class="container">
-    <div class="login-box">
-        <h2>Já estuda com a gente?</h2>
-        <p>Faça seu login e boa aula!</p>
-        <a href="/admin/categories" class="btn-login">ENTRAR</a>
-    </div>
 
-    <div class="courses">
-        <h2>Ainda não estuda com a gente?</h2>
-        <p>São mais de mil cursos nas seguintes áreas:</p>
+    <a href="admin/courses" class="skip-link">Pular para o conteúdo</a>
 
-<%--    TODO: Implementar a Questão 3 (As informações devem vir do seu banco de dados)  --%>
-        <div class="grid">
-            <div class="card"><h3>Escola_ PROGRAMAÇÃO</h3><p>Lógica de programação, .NET, Automação e Produtividade</p></div>
-            <div class="card"><h3>Escola_ FRONT-END</h3><p>HTML, CSS, Svelte, VueJS</p></div>
-            <div class="card"><h3>Escola_ DATA SCIENCE</h3><p>SQL e Banco de Dados, Engenharia de Dados, Análise de dados</p></div>
-            <div class="card"><h3>Escola_ INTELIGÊNCIA ARTIFICIAL</h3><p>IA para Criativos, IA para Programação, IA para Negócios</p></div>
-            <div class="card"><h3>Escola_ DEVOPS</h3><p>Linux, FinOps, Automação de processos</p></div>
-            <div class="card"><h3>Escola_ UX & DESIGN</h3><p>UI Design, Design System, UX Writing</p></div>
-            <div class="card"><h3>Escola_ MOBILE</h3><p>Flutter, Android, iOS</p></div>
-            <div class="card"><h3>Escola_ INOVAÇÃO & GESTÃO</h3><p>Agilidade, Liderança, Ensino e Aprendizagem</p></div>
+    <main id="conteudo">
+        <div class="container">
+
+            <section class="login-box" role="region" aria-labelledby="login-title">
+                <h2 id="login-title">Já estuda com a gente?</h2>
+                <p id="login-desc">Faça seu login e boa aula!</p>
+                <a href="<c:url value='/admin/categories'/>"
+                   class="btn-login"
+                   aria-describedby="login-desc">
+                    ENTRAR
+                </a>
+            </section>
+
+            <section class="courses" role="region" aria-labelledby="courses-title">
+                <h1 id="courses-title">Ainda não estuda com a gente?</h1>
+                <p>São mais de mil cursos nas seguintes áreas:</p>
+
+                <div class="grid">
+                    <c:forEach var="cat" items="${categories}" varStatus="loop">
+                        <article class="card" role="article" aria-labelledby="cat-${loop.index}-title">
+                            <h3 id="cat-${loop.index}-title">Escola_ ${cat}</h3>
+
+                            <c:set var="courseLine" value=""/>
+                            <c:forEach var="c" items="${courses}">
+                                <c:if test="${c.categoryName == cat}">
+                                    <c:choose>
+                                        <c:when test="${empty courseLine}">
+                                            <c:set var="courseLine" value="${c.name}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="courseLine" value="${courseLine}, ${c.name}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                            </c:forEach>
+
+                            <c:choose>
+                                <c:when test="${not empty courseLine}">
+                                    <p>${courseLine}</p>
+                                </c:when>
+                                <c:otherwise>
+                                    <p>Nenhum curso ativo nesta categoria.</p>
+                                </c:otherwise>
+                            </c:choose>
+                        </article>
+                    </c:forEach>
+                </div>
+            </section>
+
         </div>
-    </div>
-</div>
+    </main>
 </body>
 </html>

@@ -48,6 +48,8 @@ body {
     font-weight: bold;
     font-size: 1rem;
     transition: background 0.3s;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .login-box button:hover {
@@ -67,6 +69,8 @@ body {
     transition: background 0.3s;
     text-decoration: none;
     text-align: center;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .btn-login:hover {
@@ -119,3 +123,230 @@ body {
     line-height: 1.4;
     color: #cfd8e3;
 }
+
+@media (max-width: 1024px) {
+  body { padding: 1.5rem; }
+
+  .container {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .login-box .btn-login,
+  .login-box button {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0.9rem 1.25rem;
+    box-sizing: border-box;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  body { padding: 1rem; }
+
+  .container {
+    max-width: 100%;
+    gap: 1rem;
+  }
+
+  .login-box {
+    padding: 1.25rem;
+    border-radius: 10px;
+  }
+
+  .login-box h2 { font-size: 1.3rem; }
+  .login-box p  { font-size: 0.9rem; }
+
+  .courses h2 { font-size: 1.35rem; }
+  .courses p  { font-size: 0.95rem; }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .card { padding: 0.9rem; }
+
+  .login-box .btn-login,
+  .login-box button {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0.9rem 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  body { padding: 0.75rem; }
+  .login-box h2 { font-size: 1.2rem; }
+}
+
+@media (min-width: 1025px) {
+  .login-box .btn-login,
+  .login-box button {
+    display: block;
+    width: 70%;
+    max-width: 70%;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+}
+
+.btn-login,
+.login-box button,
+.card a,
+.card button {
+  outline: none;
+}
+
+.btn-login:focus-visible,
+.login-box button:focus-visible,
+.card:focus-within {
+  outline: 3px solid #7CFFCB;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(124,255,203,0.25);
+}
+
+.btn-login,
+.login-box button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+a { text-decoration-thickness: .08em; text-underline-offset: .18em; }
+a:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  .login-box {
+    background: rgba(0, 35, 90, 0.85);
+    border-color: #bfe;
+  }
+  .card {
+    background: rgba(255,255,255,0.12);
+    border-color: #bfe;
+  }
+  .btn-login,
+  .login-box button {
+    background: #7CFFCB;
+    color: #003020;
+    font-weight: 800;
+  }
+}
+
+@media (forced-colors: active) {
+  * { forced-color-adjust: auto; }
+  .card, .login-box { border: 1px solid CanvasText; }
+  .btn-login, .login-box button {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+  .btn-login:focus-visible,
+  .login-box button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+.card { position: relative; }
+.card:focus-within { box-shadow: 0 0 0 3px rgba(124,255,203,0.35); border-color: #7CFFCB; }
+.skip-link {
+  position: absolute;
+  top: -1000px;
+  left: 0;
+  background: #7CFFCB;
+  color: #001428;
+  padding: .6rem 1rem;
+  border-radius: 8px;
+  z-index: 1000;
+}
+.skip-link:focus { top: 1rem; left: 1rem; }
+.btn-login,
+.login-box button,
+.card a,
+.card button {
+  outline: none;
+}
+
+.btn-login:focus-visible,
+.login-box button:focus-visible,
+.card:focus-within {
+  outline: 3px solid #7CFFCB;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(124,255,203,0.25);
+}
+
+.btn-login,
+.login-box button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+a { text-decoration-thickness: .08em; text-underline-offset: .18em; }
+a:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  .login-box {
+    background: rgba(0, 35, 90, 0.85);
+    border-color: #bfe;
+  }
+  .card {
+    background: rgba(255,255,255,0.12);
+    border-color: #bfe;
+  }
+  .btn-login,
+  .login-box button {
+    background: #7CFFCB;
+    color: #003020;
+    font-weight: 800;
+  }
+}
+
+@media (forced-colors: active) {
+  * { forced-color-adjust: auto; }
+  .card, .login-box { border: 1px solid CanvasText; }
+  .btn-login, .login-box button {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+  .btn-login:focus-visible,
+  .login-box button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+.card { position: relative; }
+.card:focus-within { box-shadow: 0 0 0 3px rgba(124,255,203,0.35); border-color: #7CFFCB; }
+
+.skip-link {
+  position: absolute;
+  top: -1000px;
+  left: 0;
+  background: #7CFFCB;
+  color: #001428;
+  padding: .6rem 1rem;
+  border-radius: 8px;
+  z-index: 1000;
+}
+.skip-link:focus { top: 1rem; left: 1rem; }
+

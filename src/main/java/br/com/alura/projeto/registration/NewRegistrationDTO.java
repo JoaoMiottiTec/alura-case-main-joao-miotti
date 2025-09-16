@@ -6,31 +6,25 @@ import jakarta.validation.constraints.NotNull;
 
 public class NewRegistrationDTO {
 
-    @NotBlank
-    @NotNull
-    private String courseCode;
+  @NotBlank @NotNull private String courseCode;
 
-    @NotBlank
-    @NotNull
-    @Email
-    private String studentEmail;
+  @NotBlank @NotNull @Email private String studentEmail;
 
-    public NewRegistrationDTO() {}
+  public NewRegistrationDTO() {}
 
-    public String getCourseCode() {
-        return courseCode;
-    }
+  public String getCourseCode() {
+    return courseCode;
+  }
 
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
+  public void setCourseCode(String courseCode) {
+    this.courseCode = courseCode;
+  }
 
-    public String getStudentEmail() {
-        return studentEmail;
-    }
+  public String getStudentEmail() {
+    return studentEmail;
+  }
 
-    public void setStudentEmail(String studentEmail) {
-        this.studentEmail = studentEmail;
-    }
-
+  public void setStudentEmail(String studentEmail) {
+    this.studentEmail = studentEmail;
+  }
 }

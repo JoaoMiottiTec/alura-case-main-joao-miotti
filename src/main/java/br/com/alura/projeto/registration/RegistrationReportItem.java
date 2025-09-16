@@ -1,38 +1,13 @@
 package br.com.alura.projeto.registration;
 
-public class RegistrationReportItem {
+public interface RegistrationReportItem {
+  String getCourseName();
 
-    private final String courseName;
-    private final String courseCode;
-    private final String instructorName;
-    private final String instructorEmail;
-    private final Long totalRegistrations;
+  String getCourseCode();
 
-    public RegistrationReportItem(String courseName, String courseCode, String instructorName, String instructorEmail, Long totalRegistrations) {
-        this.courseName = courseName;
-        this.courseCode = courseCode;
-        this.instructorName = instructorName;
-        this.instructorEmail = instructorEmail;
-        this.totalRegistrations = totalRegistrations;
-    }
+  String getInstructorName();
 
-    public String getCourseName() {
-        return courseName;
-    }
+  String getInstructorEmail();
 
-    public String getCourseCode() {
-        return courseCode;
-    }
-
-    public String getInstructorName() {
-        return instructorName;
-    }
-
-    public String getInstructorEmail() {
-        return instructorEmail;
-    }
-
-    public Long getTotalRegistrations() {
-        return totalRegistrations;
-    }
+  Long getRegistrations();
 }
